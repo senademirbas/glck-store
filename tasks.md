@@ -21,14 +21,14 @@
 - [x] Next.js middleware ile `/admin/*` için oturum kontrolü ekle.
 
 ## Faz 2 — Genel katalog (public)
-- [ ] Anasayfa: ürün ızgarası, kategori filtre çubuğu (FR-1, FR-2).
-- [ ] Kategori sayfası `/kategori/[slug]`.
-- [ ] Filtre state'ini URL query parametrelerine bağla.
-- [ ] Ürün detay sayfası `/urun/[slug]`: galeri, beden seçimi, "Sepete
+- [x] Anasayfa: ürün ızgarası, kategori filtre çubuğu (FR-1, FR-2).
+- [x] Kategori sayfası `/kategori/[slug]`.
+- [x] Filtre state'ini URL query parametrelerine bağla.
+- [x] Ürün detay sayfası `/urun/[slug]`: galeri, beden seçimi, "Sepete
       Ekle" (FR-3).
-- [ ] Görsel optimizasyonu: `next/image`, lazy loading, responsive
+- [x] Görsel optimizasyonu: `next/image`, lazy loading, responsive
       `sizes`.
-- [ ] SEO: her sayfa için dinamik `<title>`/meta description, Open
+- [x] SEO: her sayfa için dinamik `<title>`/meta description, Open
       Graph etiketleri.
 
 ## Faz 3 — Sepet ve WhatsApp checkout
