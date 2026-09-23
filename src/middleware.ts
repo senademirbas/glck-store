@@ -6,14 +6,7 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    /*
-     * Aşağıdaki yollar dışındaki tüm istekleri eşleştir:
-     * - _next/static (statik dosyalar)
-     * - _next/image (görsel optimizasyon dosyaları)
-     * - favicon.ico (favicon)
-     * - Resim, font vb. uzantılar
-     */
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
-  ],
+  // tasks.md Faz 1 uyarınca middleware yalnızca /admin rotalarını korur.
+  // Kamuya açık vitrin sayfaları doğrudan hızlıca render edilir.
+  matcher: ["/admin/:path*"],
 };
