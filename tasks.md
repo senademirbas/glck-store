@@ -13,12 +13,12 @@
 - [x] Vercel projesini GitHub reposuna bağla (henüz env var girmeden).
 
 ## Faz 1 — Veri modeli ve kimlik doğrulama
-- [ ] `plan.md` §3'teki tabloları migration dosyası olarak yaz
+- [x] `plan.md` §3'teki tabloları migration dosyası olarak yaz
       (categories, products, product_images, store_settings).
-- [ ] RLS politikalarını uygula: herkes yayınlanmış ürünü okuyabilir,
+- [x] RLS politikalarını uygula: herkes yayınlanmış ürünü okuyabilir,
       sadece admin yazabilir.
-- [ ] Supabase Auth'ta tek admin kullanıcısını oluştur.
-- [ ] Next.js middleware ile `/admin/*` için oturum kontrolü ekle.
+- [x] Supabase Auth'ta tek admin kullanıcısını oluştur.
+- [x] Next.js middleware ile `/admin/*` için oturum kontrolü ekle.
 
 ## Faz 2 — Genel katalog (public)
 - [ ] Anasayfa: ürün ızgarası, kategori filtre çubuğu (FR-1, FR-2).
