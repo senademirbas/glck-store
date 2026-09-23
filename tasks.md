@@ -6,11 +6,11 @@
 > şekilde küçük tutulmuştur (constitution §6 — modüler granülarite).
 
 ## Faz 0 — Kurulum
-- [ ] Next.js + TypeScript + Tailwind projesi oluştur (koyu tema temel
+- [x] Next.js + TypeScript + Tailwind projesi oluştur (koyu tema temel
       renk paleti ile).
-- [ ] GitHub reposu oluştur, `.gitignore`'a `.env*` ekle.
-- [ ] Supabase projesi oluştur, bağlantı bilgilerini `.env.local`'e ekle.
-- [ ] Vercel projesini GitHub reposuna bağla (henüz env var girmeden).
+- [x] GitHub reposu oluştur, `.gitignore`'a `.env*` ekle.
+- [x] Supabase projesi oluştur, bağlantı bilgilerini `.env.local`'e ekle.
+- [x] Vercel projesini GitHub reposuna bağla (henüz env var girmeden).
 
 ## Faz 1 — Veri modeli ve kimlik doğrulama
 - [ ] `plan.md` §3'teki tabloları migration dosyası olarak yaz
