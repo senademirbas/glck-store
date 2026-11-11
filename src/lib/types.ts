@@ -7,6 +7,11 @@ export interface Category {
   created_at: string;
 }
 
+export interface CategoryWithProducts extends Category {
+  products: Product[];
+  total_products_count: number;
+}
+
 export interface ProductImage {
   id: string;
   product_id: string;

@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/client";
-import type { Category, Product, StoreSettings, CatalogFilterParams } from "@/lib/types";
+import type { Category, Product, StoreSettings, CatalogFilterParams, CategoryWithProducts } from "@/lib/types";
 
 // Kamuya açık aktif kategorileri getir
 export async function getCategories(): Promise<Category[]> {
@@ -143,5 +143,63 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
   } catch (err) {
     console.error("Ürün detay servisi hatası:", err);
     return null;
+  }
+}
+
+// Ana sayfa için: her aktif kategorinin en son eklenen N ürününü ve toplam ürün sayısını getir
+export async function getHomeCategoriesWithProducts(limitPerCategory = 4): Promise<CategoryWithProducts[]> {
+  try {
+    const categories = await getCategories();
+    if (!categories || categories.length === 0) return [];
+
+    const supabase = createClient();
+
+    const categoryResults = await Promise.all(
+      categories.map(async (cat) => {
+        const { data, count, error } = await supabase
+          .from("products")
+          .select(
+            `
+            *,
+            category:categories(*),
+            product_images(*)
+          `,
+            { count: "exact" }
+          )
+          .eq("category_id", cat.id)
+          .eq("is_published", true)
+          .is("deleted_at", null)
+          .order("created_at", { ascending: false })
+          .limit(limitPerCategory);
+
+        if (error) {
+          console.error(`Kategori (${cat.name}) ürünleri getirilemedi:`, error.message);
+          return null;
+        }
+
+        const products = (data as Product[]) || [];
+
+        // Görselleri sort_order'a göre sırala
+        products.forEach((p) => {
+          if (p.product_images && Array.isArray(p.product_images)) {
+            p.product_images.sort((a, b) => a.sort_order - b.sort_order);
+          }
+        });
+
+        return {
+          ...cat,
+          products,
+          total_products_count: count ?? products.length,
+        } as CategoryWithProducts;
+      })
+    );
+
+    // Yalnızca içerisinde en az 1 ürün olan kategorileri ana sayfada göster
+    return categoryResults.filter(
+      (cat): cat is CategoryWithProducts => cat !== null && cat.products.length > 0
+    );
+  } catch (err) {
+    console.error("getHomeCategoriesWithProducts hatası:", err);
+    return [];
   }
 }
