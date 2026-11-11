@@ -76,9 +76,17 @@ export async function getProducts(filters: CatalogFilterParams = {}): Promise<Pr
       }
     }
 
-    // Beden filtresi (sizes array contains size)
+    // Beden filtresi (tek beden veya çoklu beden overlaps desteği)
     if (filters.size) {
-      query = query.contains("sizes", [filters.size]);
+      const sizeList = filters.size
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
+      if (sizeList.length === 1) {
+        query = query.contains("sizes", [sizeList[0]]);
+      } else if (sizeList.length > 1) {
+        query = query.overlaps("sizes", sizeList);
+      }
     }
 
     // Fiyat aralığı

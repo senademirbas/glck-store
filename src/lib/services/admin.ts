@@ -119,7 +119,7 @@ export async function adminToggleStock(id: string, in_stock: boolean): Promise<b
     const adminClient = createAdminClient();
     const { error } = await adminClient.from("products").update({ in_stock }).eq("id", id);
     if (!error) {
-      revalidatePath("/");
+      revalidatePath("/", "layout");
       revalidatePath("/admin");
       return true;
     }
@@ -137,7 +137,7 @@ export async function adminTogglePublished(id: string, is_published: boolean): P
     const adminClient = createAdminClient();
     const { error } = await adminClient.from("products").update({ is_published }).eq("id", id);
     if (!error) {
-      revalidatePath("/");
+      revalidatePath("/", "layout");
       revalidatePath("/admin");
       return true;
     }
@@ -158,7 +158,7 @@ export async function adminSoftDeleteProduct(id: string): Promise<boolean> {
       .update({ deleted_at: new Date().toISOString() })
       .eq("id", id);
     if (!error) {
-      revalidatePath("/");
+      revalidatePath("/", "layout");
       revalidatePath("/admin");
       return true;
     }
@@ -179,7 +179,7 @@ export async function adminRestoreProduct(id: string): Promise<boolean> {
       .update({ deleted_at: null })
       .eq("id", id);
     if (!error) {
-      revalidatePath("/");
+      revalidatePath("/", "layout");
       revalidatePath("/admin");
       return true;
     }
@@ -197,7 +197,7 @@ export async function adminPermanentDeleteProduct(id: string): Promise<boolean> 
     const adminClient = createAdminClient();
     const { error } = await adminClient.from("products").delete().eq("id", id);
     if (!error) {
-      revalidatePath("/");
+      revalidatePath("/", "layout");
       revalidatePath("/admin");
       return true;
     }
@@ -287,7 +287,7 @@ export async function adminSaveProduct(
       if (imgError) console.error("Görsel kayıt hatası:", imgError.message);
     }
 
-    revalidatePath("/");
+    revalidatePath("/", "layout");
     revalidatePath("/admin");
     return { success: true, productId: savedId };
   } catch (err: unknown) {
@@ -403,7 +403,7 @@ export async function adminSaveCategory(
       savedCategory = data as Category;
     }
 
-    revalidatePath("/");
+    revalidatePath("/", "layout");
     revalidatePath("/admin");
     revalidatePath("/admin/kategoriler");
     return { success: true, category: savedCategory || undefined };

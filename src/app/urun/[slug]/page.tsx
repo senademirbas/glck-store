@@ -12,6 +12,9 @@ interface ProductPageProps {
   params: Promise<{ slug: string }>;
 }
 
+// Next.js ISR Önbellek
+export const revalidate = 60;
+
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
   const { slug } = await params;
   const product = await getProductBySlug(slug);

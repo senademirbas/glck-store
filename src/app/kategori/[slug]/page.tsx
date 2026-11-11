@@ -15,6 +15,9 @@ interface CategoryPageProps {
   }>;
 }
 
+// Next.js ISR Önbellek
+export const revalidate = 60;
+
 export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
   const { slug } = await params;
   const categories = await getCategories();

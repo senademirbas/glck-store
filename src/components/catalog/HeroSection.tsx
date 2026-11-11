@@ -37,7 +37,7 @@ export default function HeroSection({
 
         <div className="mt-8 flex justify-center">
           <a
-            href="#katalog"
+            href="#koleksiyonlar"
             className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#a1a1aa] hover:text-[#e5a93b] transition-colors"
           >
             <span>Koleksiyonu İncele</span>
