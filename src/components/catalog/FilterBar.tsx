@@ -1,9 +1,10 @@
 "use client";
 
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import Link from "next/link";
 import type { Category } from "@/lib/types";
 import { SlidersHorizontal, X } from "lucide-react";
-import { useCallback } from "react";
+import { useCallback, useState, useEffect, useTransition } from "react";
 
 interface FilterBarProps {
   categories: Category[];
@@ -23,14 +24,22 @@ export default function FilterBar({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const [isPending, startTransition] = useTransition();
 
-  // Aktif bedenleri diziye dönüştür (virgülle ayrılmış çoklu bedenler için: örn. "M,L")
+  // URL'deki aktif bedenler
   const activeSizesList = activeSize
     ? activeSize
         .split(",")
         .map((s) => s.trim())
         .filter(Boolean)
     : [];
+
+  // Anında görsel geri bildirim için yerel durum
+  const [optimisticSizes, setOptimisticSizes] = useState<string[]>(activeSizesList);
+
+  useEffect(() => {
+    setOptimisticSizes(activeSizesList);
+  }, [activeSize]);
 
   // Query parametrelerini güncelle
   const createQueryString = useCallback(
@@ -46,52 +55,57 @@ export default function FilterBar({
     [searchParams]
   );
 
-  const handleCategoryChange = (slug: string) => {
-    // Mevcut filtreleri (beden, sıralama) koru ancak kategori parametresini temizle
+  // Kategori linkleri için mevcut filtre parametrelerini koru (kategori parametresi hariç)
+  const getCategoryHref = (slug: string) => {
     const params = new URLSearchParams(searchParams.toString());
     params.delete("kategori");
-
     const qs = params.toString() ? `?${params.toString()}` : "";
-    if (slug === "all") {
-      router.push(`/${qs}`, { scroll: false });
-    } else {
-      router.push(`/kategori/${slug}${qs}`, { scroll: false });
-    }
+    return slug === "all" ? `/${qs}` : `/kategori/${slug}${qs}`;
   };
 
   const handleSizeChange = (size: string) => {
     let newSizes: string[];
-    if (activeSizesList.includes(size)) {
-      newSizes = activeSizesList.filter((s) => s !== size);
+    if (optimisticSizes.includes(size)) {
+      newSizes = optimisticSizes.filter((s) => s !== size);
     } else {
-      newSizes = [...activeSizesList, size];
+      newSizes = [...optimisticSizes, size];
     }
 
+    // 0ms anında görsel güncelleme
+    setOptimisticSizes(newSizes);
+
     const qs = createQueryString("beden", newSizes.length > 0 ? newSizes.join(",") : null);
-    router.push(`${pathname}?${qs}`, { scroll: false });
+    startTransition(() => {
+      router.push(`${pathname}?${qs}`, { scroll: false });
+    });
   };
 
   const handleSortChange = (sort: string) => {
     const qs = createQueryString("sirala", sort === "newest" ? null : sort);
-    router.push(`${pathname}?${qs}`, { scroll: false });
+    startTransition(() => {
+      router.push(`${pathname}?${qs}`, { scroll: false });
+    });
   };
 
   const clearAllFilters = () => {
-    router.push(pathname, { scroll: false });
+    setOptimisticSizes([]);
+    startTransition(() => {
+      router.push(pathname, { scroll: false });
+    });
   };
 
   const hasActiveFilters =
     (activeCategorySlug && activeCategorySlug !== "all") ||
-    activeSizesList.length > 0 ||
+    optimisticSizes.length > 0 ||
     (activeSort && activeSort !== "newest");
 
   return (
     <div className="w-full space-y-4 py-4" id="katalog">
-      {/* Category Pills (Horizontal Scrollable on Mobile) */}
+      {/* Category Pills (Next.js Link ile anında arka planda prefetch edilir, 0ms geçiş!) */}
       <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-        <button
-          type="button"
-          onClick={() => handleCategoryChange("all")}
+        <Link
+          href={getCategoryHref("all")}
+          prefetch={true}
           className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer ${
             activeCategorySlug === "all" || !activeCategorySlug
               ? "bg-[#e5a93b] text-[#09090b] shadow-md shadow-[#e5a93b]/10 font-bold"
@@ -99,15 +113,15 @@ export default function FilterBar({
           }`}
         >
           Tüm Ürünler
-        </button>
+        </Link>
 
         {categories.map((category) => {
           const isActive = activeCategorySlug === category.slug;
           return (
-            <button
-              type="button"
+            <Link
               key={category.id}
-              onClick={() => handleCategoryChange(category.slug)}
+              href={getCategoryHref(category.slug)}
+              prefetch={true}
               className={`px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer ${
                 isActive
                   ? "bg-[#e5a93b] text-[#09090b] shadow-md shadow-[#e5a93b]/10 font-bold"
@@ -115,20 +129,20 @@ export default function FilterBar({
               }`}
             >
               {category.name}
-            </button>
+            </Link>
           );
         })}
       </div>
 
       {/* Secondary Controls: Multi-Size Selector & Sort Dropdown */}
       <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-[#27272a]/60">
-        {/* Çoklu Beden Seçimi */}
+        {/* Çoklu Beden Seçimi (0ms anında geri bildirim) */}
         <div className="flex items-center gap-1.5 flex-wrap">
           <span className="text-[11px] font-semibold uppercase tracking-wider text-[#71717a] mr-1">
             Beden:
           </span>
           {SIZES.map((size) => {
-            const isSelected = activeSizesList.includes(size);
+            const isSelected = optimisticSizes.includes(size);
             return (
               <button
                 type="button"

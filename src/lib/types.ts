@@ -47,6 +47,7 @@ export interface StoreSettings {
 
 export interface CatalogFilterParams {
   categorySlug?: string;
+  categoryId?: string;
   size?: string;
   minPrice?: number;
   maxPrice?: number;

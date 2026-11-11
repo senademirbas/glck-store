@@ -18,6 +18,12 @@ interface CategoryPageProps {
 // Next.js ISR Önbellek
 export const revalidate = 60;
 
+// Tüm aktif kategorileri statik olarak önceden derle
+export async function generateStaticParams() {
+  const categories = await getCategories();
+  return categories.map((cat) => ({ slug: cat.slug }));
+}
+
 export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
   const { slug } = await params;
   const categories = await getCategories();
@@ -45,9 +51,8 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
   const size = resolvedParams.beden;
   const sort = resolvedParams.sirala as "newest" | "price_asc" | "price_desc" | undefined;
 
-  const [categories, products, settings] = await Promise.all([
+  const [categories, settings] = await Promise.all([
     getCategories(),
-    getProducts({ categorySlug: slug, size, sort }),
     getStoreSettings(),
   ]);
 
@@ -55,6 +60,8 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
   if (!currentCategory) {
     notFound();
   }
+
+  const products = await getProducts({ categoryId: currentCategory.id, size, sort });
 
   return (
     <div className="min-h-screen flex flex-col bg-[#09090b] text-[#f4f4f5]">

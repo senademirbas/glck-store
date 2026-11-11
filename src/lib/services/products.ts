@@ -62,8 +62,10 @@ export async function getProducts(filters: CatalogFilterParams = {}): Promise<Pr
       .eq("is_published", true)
       .is("deleted_at", null);
 
-    // Kategori slug filtresi
-    if (filters.categorySlug && filters.categorySlug !== "all") {
+    // Kategori filtresi
+    if (filters.categoryId) {
+      query = query.eq("category_id", filters.categoryId);
+    } else if (filters.categorySlug && filters.categorySlug !== "all") {
       // Önce kategorinin id'sini bul
       const { data: cat } = await supabase
         .from("categories")
