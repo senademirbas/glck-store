@@ -4,15 +4,12 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Product } from "@/lib/types";
 import { ShoppingBag, ArrowRight } from "lucide-react";
-import { useState } from "react";
 
 interface ProductCardProps {
   product: Product;
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const [imageLoaded, setImageLoaded] = useState(false);
-
   // Birincil görsel
   const primaryImage =
     product.product_images && product.product_images.length > 0
@@ -31,10 +28,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           alt={product.name}
           fill
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-          className={`object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out ${
-            imageLoaded ? "opacity-100" : "opacity-0"
-          }`}
-          onLoad={() => setImageLoaded(true)}
+          className="object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out"
         />
 
         {/* Stock Badge */}
